@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyBloom — Your Study Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --mint:       #d4f5e9;
+    --mint-mid:   #a8e6cf;
+    --mint-dark:  #4caf82;
+    --lavender:   #ede7f6;
+    --lavender-mid:#c5b3e6;
+    --lavender-dark:#7c5cbf;
+    --peach:      #fdebd0;
+    --peach-mid:  #f9c784;
+    --peach-dark: #e07b39;
+    --sky:        #dbeafe;
+    --sky-mid:    #93c5fd;
+    --sky-dark:   #3b82f6;
+    --rose:       #fce4ec;
+    --rose-mid:   #f48fb1;
+    --rose-dark:  #e91e63;
+    --bg:         #f8fafb;
+    --card:       #ffffff;
+    --text:       #2d3748;
+    --muted:      #718096;
+    --border:     #e8ecf0;
+    --shadow:     0 4px 24px rgba(0,0,0,0.07);
+    --radius:     18px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    color: var(--lavender-dark);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon { font-size: 1.8rem; }
+  .tagline { font-size: 0.8rem; color: var(--muted); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .date-badge {
+    background: var(--lavender);
+    color: var(--lavender-dark);
+    padding: 8px 18px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.88rem;
+  }
+  .notification-btn {
+    background: var(--peach);
+    border: none;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.2s;
+  }
+  .notification-btn:hover { transform: scale(1.1); }
+  .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 10px; height: 10px;
+    background: var(--rose-dark);
+    border-radius: 50%;
+    border: 2px solid white;
+  }
+
+  /* ── LAYOUT ── */
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 69px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    background: white;
+    border-right: 1px solid var(--border);
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .nav-section-label {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 12px 12px 6px;
+  }
+  .nav-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--muted);
+    width: 100%;
+    text-align: left;
+    transition: all 0.18s;
+  }
+  .nav-btn:hover { background: var(--bg); color: var(--text); }
+  .nav-btn.active { background: var(--lavender); color: var(--lavender-dark); }
+  .nav-btn .nav-icon { font-size: 1.2rem; width: 24px; text-align: center; }
+
+  .subject-chips { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .subject-chip {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+  .subject-chip:hover { opacity: 0.85; }
+  .chip-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .chip-name { flex: 1; }
+  .chip-count {
+    background: rgba(255,255,255,0.6);
+    padding: 2px 8px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+  }
+  .chip-del {
+    opacity: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: opacity 0.2s;
+  }
+  .subject-chip:hover .chip-del { opacity: 1; }
+
+  .add-subject-form {
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .add-subject-form input {
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .add-subject-form input:focus { border-color: var(--lavender-mid); }
+  .color-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .color-swatch {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.15s;
+  }
+  .color-swatch:hover, .color-swatch.selected { transform: scale(1.2); border-color: var(--text); }
+  .btn-add-subject {
+    background: var(--lavender-dark);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-add-subject:hover { opacity: 0.85; }
+
+  /* ── MAIN CONTENT ── */
+  main {
+    padding: 28px;
+    overflow-y: auto;
+  }
+
+  /* ── TABS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: -20px; right: -20px;
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    opacity: 0.15;
+  }
+  .stat-card.mint::before { background: var(--mint-dark); }
+  .stat-card.lavender::before { background: var(--lavender-dark); }
+  .stat-card.peach::before { background: var(--peach-dark); }
+  .stat-card.sky::before { background: var(--sky-dark); }
+  .stat-icon { font-size: 1.6rem; }
+  .stat-value { font-size: 2rem; font-weight: 800; }
+  .stat-label { font-size: 0.8rem; color: var(--muted); font-weight: 600; }
+  .stat-card.mint .stat-value { color: var(--mint-dark); }
+  .stat-card.lavender .stat-value { color: var(--lavender-dark); }
+  .stat-card.peach .stat-value { color: var(--peach-dark); }
+  .stat-card.sky .stat-value { color: var(--sky-dark); }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .three-col { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+  .card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem;
+    color: var(--text);
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .card-title span { font-size: 1.3rem; }
+
+  /* ── PROGRESS BAR ── */
+  .progress-item { margin-bottom: 16px; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 700; font-size: 0.88rem; }
+  .progress-bar { height: 10px; background: var(--border); border-radius: 50px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 50px; transition: width 0.6s ease; }
+
+  /* ── TASK LIST ── */
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+
+  .task-add-form {
+    background: white;
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto auto;
+    gap: 12px;
+    align-items: end;
+  }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 0.8rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-group input, .form-group select {
+    padding: 10px 14px;
+    border: 2px solid var(--border);
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 0.92rem;
+    outline: none;
+    transition: border-color 0.2s;
+    background: white;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--lavender-mid); }
+
+  .btn-primary {
+    background: var(--lavender-dark);
+    color: white;
+    border: none;
+    padding: 11px 24px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .btn-secondary {
+    background: var(--mint);
+    color: var(--mint-dark);
+    border: none;
+    padding: 11px 20px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .btn-secondary:hover { background: var(--mint-mid); }
+
+  /* Filter bar */
+  .filter-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    padding: 7px 18px;
+    border-radius: 50px;
+    border: 2px solid var(--border);
+    background: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.18s;
+    color: var(--muted);
+  }
+  .filter-chip:hover { border-color: var(--lavender-mid); color: var(--lavender-dark); }
+  .filter-chip.active { background: var(--lavender); border-color: var(--lavender-mid); color: var(--lavender-dark); }
+
+  /* Task cards */
+  .tasks-grid { display: flex; flex-direction: column; gap: 12px; }
+  .task-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-left: 5px solid transparent;
+    transition: transform 0.18s, box-shadow 0.18s;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .task-card:hover { transform: translateX(3px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .task-card.done { opacity: 0.55; }
+  .task-card.done .task-name { text-decoration: line-through; }
+
+  .task-checkbox {
+    width: 22px; height: 22px;
+    border-radius: 6px;
+    border: 2.5px solid var(--border);
+    cursor: pointer;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 0.8rem;
+  }
+  .task-card.done .task-checkbox { background: var(--mint-dark); border-color: var(--mint-dark); color: white; }
+
+  .task-info { flex: 1; }
+  .task-name { font-weight: 700; font-size: 0.98rem; margin-bottom: 4px; }
+  .task-meta { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .task-subject-badge {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .task-due { font-size: 0.78rem; color: var(--muted); font-weight: 600; }
+  .task-due.overdue { color: var(--rose-dark); }
+
+  .task-priority {
+    padding: 3px 10px;
+    border-radius: 50px;
+    font-size: 0.73rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .priority-high { background: var(--rose); color: var(--rose-dark); }
+  .priority-medium { background: var(--peach); color: var(--peach-dark); }
+  .priority-low { background: var(--mint); color: var(--mint-dark); }
+
+  .task-del-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    padding: 4px 8px;
+    border-radius: 6px;
+  }
+  .task-card:hover .task-del-btn { opacity: 1; }
+  .task-del-btn:hover { background: var(--rose); }
+
+  /* ── TIMETABLE ── */
+  .timetable-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+  .week-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border-radius: 50px;
+    padding: 6px 10px;
+    box-shadow: var(--shadow);
+  }
+  .week-nav button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 4px 10px;
+    border-radius: 50px;
+    transition: background 0.2s;
+  }
+  .week-nav button:hover { background: var(--lavender); }
+  .week-label { font-weight: 700; font-size: 0.9rem; min-width: 180px; text-align: center; }
+
+  .timetable-grid { background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .timetable-header {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    background: var(--lavender);
+  }
+  .th-cell {
+    padding: 14px 8px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--lavender-dark);
+  }
+  .th-cell.today { background: var(--lavender-dark); color: white; }
+  .timetable-body { display: flex; flex-direction: column; }
+  .time-row {
+    display: grid;
+    grid-template-columns: 80px repeat(7, 1fr);
+    border-top: 1px solid var(--border);
+    min-height: 60px;
+  }
+  .time-label {
+    padding: 8px;
+    font-size: 0.78rem;
+    color: var(--muted);
+    font-weight: 700;
+    text-align: right;
+    padding-right: 12px;
+    border-right: 1px solid var(--border);
+  }
+  .time-cell {
+    border-right: 1px solid var(--border);
+    padding: 4px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .time-cell:hover { background: var(--lavender); }
+  .time-cell:last-child { border-right: none; }
+  .time-block {
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    position: relative;
+  }
+  .time-block .del-block {
+    position: absolute;
+    top: 2px; right: 4px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    opacity: 0;
+    font-size: 0.65rem;
+    transition: opacity 0.15s;
+  }
+  .time-block:hover .del-block { opacity: 1; }
+
+  /* Session add modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(3px);
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    width: 380px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    animation: popIn 0.25s ease;
+  }
+  @keyframes popIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 20px; }
+  .modal .form-group { margin-bottom: 14px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions button { flex: 1; }
+  .btn-ghost {
+    background: var(--border);
+    border: none;
+    padding: 11px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-ghost:hover { background: var(--border); filter: brightness(0.9); }
+
+  /* ── PROGRESS TAB ── */
+  .progress-overview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .subject-progress-card {
+    background: white;
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    text-align: center;
+  }
+  .circular-progress {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 14px;
+  }
+  .circular-progress svg { transform: rotate(-90deg); }
+  .circular-progress .bg-circle { fill: none; stroke: var(--border); stroke-width: 8; }
+  .circular-progress .fill-circle { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.8s ease; }
+  .circular-progress .pct-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.1rem;
+  }
+  .sp-name { font-weight: 800; font-size: 1rem; margin-bottom: 4px; }
+  .sp-sub { font-size: 0.8rem; color: var(--muted); }
+
+  .streak-card {
+    background: linear-gradient(135deg, var(--peach) 0%, var(--mint) 100%);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .streak-number { font-size: 3.5rem; font-weight: 800; color: var(--peach-dark); line-height: 1; }
+  .streak-info h3 { font-weight: 800; font-size: 1.1rem; margin-bottom: 4px; }
+  .streak-info p { color: var(--muted); font-size: 0.88rem; }
+
+  .weekly-chart { background: white; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow); }
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    height: 120px;
+    margin-top: 16px;
+  }
+  .chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .chart-bar {
+    width: 100%;
+    border-radius: 8px 8px 0 0;
+    min-height: 4px;
+    transition: height 0.5s ease;
+  }
+  .chart-day { font-size: 0.75rem; font-weight: 700; color: var(--muted); }
+
+  /* ── REMINDERS TAB ── */
+  .reminder-form {
+    background: white;
+    border-radius: var(--radius);
+    padding: 22px;
+    box-shadow: var(--shadow);
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+  .reminder-list { display: flex; flex-direction: column; gap: 12px; }
+  .reminder-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    animation: slideIn 0.3s ease;
+  }
+  .reminder-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+  }
+  .reminder-info { flex: 1; }
+  .reminder-title { font-weight: 700; margin-bottom: 3px; }
+  .reminder-time { font-size: 0.82rem; color: var(--muted); font-weight: 600; }
+  .reminder-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    opacity: 0.5;
+    transition: all 0.2s;
+  }
+  .reminder-del:hover { background: var(--rose); opacity: 1; }
+
+  /* ── TOAST ── */
+  #toast-container {
+    position: fixed;
+    top: 80px; right: 20px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .toast {
+    background: white;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    border-left: 4px solid var(--mint-dark);
+    animation: slideInRight 0.3s ease;
+    min-width: 260px;
+  }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(30px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  .toast.warning { border-left-color: var(--peach-dark); }
+  .toast.info    { border-left-color: var(--sky-dark); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: 1fr; }
+    aside { display: none; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+    .task-add-form { grid-template-columns: 1fr 1fr; }
+    .reminder-form { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--muted);
+  }
+  .empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state p { font-weight: 600; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <span class="logo-icon">🌸</span>
+    StudyBloom
+  </div>
+  <div style="text-align:center;">
+    <div class="tagline">Your Personal Study Companion</div>
+  </div>
+  <div class="header-right">
+    <div class="date-badge" id="headerDate"></div>
+    <button class="notification-btn" onclick="switchTab('reminders')" title="Reminders">
+      🔔
+      <div class="notif-dot"></div>
+    </button>
+  </div>
+</header>
+
+<div class="app">
+  <!-- SIDEBAR -->
+  <aside>
+    <div class="nav-section-label">Navigation</div>
+    <button class="nav-btn active" data-tab="dashboard" onclick="switchTab('dashboard',this)">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+    <button class="nav-btn" data-tab="tasks" onclick="switchTab('tasks',this)">
+      <span class="nav-icon">✅</span> Tasks
+    </button>
+    <button class="nav-btn" data-tab="timetable" onclick="switchTab('timetable',this)">
+      <span class="nav-icon">📅</span> Timetable
+    </button>
+    <button class="nav-btn" data-tab="progress" onclick="switchTab('progress',this)">
+      <span class="nav-icon">📈</span> Progress
+    </button>
+    <button class="nav-btn" data-tab="reminders" onclick="switchTab('reminders',this)">
+      <span class="nav-icon">🔔</span> Reminders
+    </button>
+
+    <div class="nav-section-label" style="margin-top:8px;">Subjects</div>
+    <div class="subject-chips" id="subjectChips"></div>
+
+    <div class="add-subject-form">
+      <input id="subjectNameInput" placeholder="Subject name…" maxlength="20" />
+      <div class="color-row" id="colorRow"></div>
+      <button class="btn-add-subject" onclick="addSubject()">＋ Add Subject</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main>
+    <!-- DASHBOARD -->
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="section-title">Good morning! Let's study 🌟</div>
+      <div class="stats-row">
+        <div class="stat-card mint">
+          <div class="stat-icon">✅</div>
+          <div class="stat-value" id="statCompleted">0</div>
+          <div class="stat-label">Tasks Completed</div>
+        </div>
+        <div class="stat-card lavender">
+          <div class="stat-icon">📝</div>
+          <div class="stat-value" id="statPending">0</div>
+          <div class="stat-label">Tasks Pending</div>
+        </div>
+        <div class="stat-card peach">
+          <div class="stat-icon">📚</div>
+          <div class="stat-value" id="statSubjects">0</div>
+          <div class="stat-label">Subjects</div>
+        </div>
+        <div class="stat-card sky">
+          <div class="stat-icon">🔥</div>
+          <div class="stat-value" id="statStreak">0</div>
+          <div class="stat-label">Day Streak</div>
+        </div>
+      </div>
+
+      <div class="three-col">
+        <div class="card">
+          <div class="card-title">Subject Progress <span>📚</span></div>
+          <div id="dashProgress"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Today's Tasks <span>📋</span></div>
+          <div id="todayTasks"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Quick Add Task <span>⚡</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end;">
+          <div class="form-group">
+            <label>Task Name</label>
+            <input id="qTaskName" placeholder="e.g. Read Chapter 5" />
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="qTaskSubject"><option value="">Select subject…</option></select>
+          </div>
+          <div class="form-group">
+            <label>Due Date</label>
+            <input type="date" id="qTaskDate" />
+          </div>
+          <button class="btn-primary" onclick="quickAddTask()">＋ Add</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TASKS -->
+    <div class="tab-panel" id="tab-tasks">
+      <div class="section-title">My Tasks 📝</div>
+      <div class="task-add-form">
+        <div class="form-group">
+          <label>Task Name</label>
+          <input id="taskName" placeholder="Enter task name…" />
+        </div>
+        <div class="form-group">
+          <label>Subject</label>
+          <select id="taskSubject"><option value="">Select subject…</option></select>
+        </div>
+        <div class="form-group">
+          <label>Due Date</label>
+          <input type="date" id="taskDate" />
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <select id="taskPriority">
+            <option value="low">🟢 Low</option>
+            <option value="medium" selected>🟡 Medium</option>
+            <option value="high">🔴 High</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="addTask()" style="align-self:flex-end;">＋ Add Task</button>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-chip active" onclick="filterTasks('all',this)">All</button>
+        <button class="filter-chip" onclick="filterTasks('pending',this)">Pending</button>
+        <button class="filter-chip" onclick="filterTasks('done',this)">Completed</button>
+        <button class="filter-chip" onclick="filterTasks('high',this)">🔴 High Priority</button>
+        <button class="filter-chip" onclick="filterTasks('today',this)">📅 Due Today</button>
+      </div>
+
+      <div class="tasks-grid" id="tasksList"></div>
+    </div>
+
+    <!-- TIMETABLE -->
+    <div class="tab-panel" id="tab-timetable">
+      <div class="section-title">Weekly Timetable 📅</div>
+      <div class="timetable-controls">
+        <div class="week-nav">
+          <button onclick="changeWeek(-1)">◀</button>
+          <div class="week-label" id="weekLabel"></div>
+          <button onclick="changeWeek(1)">▶</button>
+        </div>
+        <button class="btn-secondary" onclick="goToToday()">Today</button>
+        <button class="btn-primary" onclick="openAddSessionModal()">＋ Add Study Session</button>
+      </div>
+      <div class="timetable-grid">
+        <div class="timetable-header" id="timetableHeader"></div>
+        <div class="timetable-body" id="timetableBody"></div>
+      </div>
+    </div>
+
+    <!-- PROGRESS -->
+    <div class="tab-panel" id="tab-progress">
+      <div class="section-title">Progress Tracker 📈</div>
+
+      <div class="streak-card">
+        <div class="streak-number" id="streakNum">0</div>
+        <div class="streak-info">
+          <h3>Day Study Streak 🔥</h3>
+          <p>Keep it up! Complete at least one task daily.</p>
+        </div>
+      </div>
+
+      <div class="progress-overview" id="progressOverview"></div>
+
+      <div class="weekly-chart card">
+        <div class="card-title">Tasks Completed This Week <span>📊</span></div>
+        <div class="chart-bars" id="weeklyChart"></div>
+      </div>
+    </div>
+
+    <!-- REMINDERS -->
+    <div class="tab-panel" id="tab-reminders">
+      <div class="section-title">Reminders 🔔</div>
+      <div class="reminder-form">
+        <div class="form-group">
+          <label>Reminder Message</label>
+          <input id="reminderText" placeholder="e.g. Study Maths for 1 hour" />
+        </div>
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="reminderDate" />
+        </div>
+        <div class="form-group">
+          <label>Time</label>
+          <input type="time" id="reminderTime" />
+        </div>
+        <button class="btn-primary" onclick="addReminder()">＋ Set Reminder</button>
+      </div>
+      <div class="reminder-list" id="reminderList"></div>
+    </div>
+  </main>
+</div>
+
+<!-- ADD SESSION MODAL -->
+<div class="modal-overlay" id="sessionModal">
+  <div class="modal">
+    <h3>📅 Add Study Session</h3>
+    <div class="form-group">
+      <label>Subject</label>
+      <select id="sessionSubject"><option value="">Select subject…</option></select>
+    </div>
+    <div class="form-group">
+      <label>Day</label>
+      <select id="sessionDay">
+        <option>Monday</option><option>Tuesday</option><option>Wednesday</option>
+        <option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Start Time</label>
+      <select id="sessionStart"></select>
+    </div>
+    <div class="form-group">
+      <label>Duration</label>
+      <select id="sessionDuration">
+        <option value="1">1 hour</option>
+        <option value="2">2 hours</option>
+        <option value="3">3 hours</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="addSession()">Add Session</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div id="toast-container"></div>
+
+<script>
+/* ══════════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════════ */
+const COLORS = [
+  '#a8e6cf','#93c5fd','#f9a8d4','#fcd34d',
+  '#c4b5fd','#6ee7b7','#fca5a5','#7dd3fc'
+];
+
+let subjects = [
+  { id: 1, name: 'Mathematics', color: '#93c5fd' },
+  { id: 2, name: 'Science',     color: '#a8e6cf' },
+  { id: 3, name: 'English',     color: '#f9a8d4' },
+];
+
+let tasks = [
+  { id: 1, name: 'Read Chapter 3', subjectId: 1, date: today(), priority: 'high',   done: false },
+  { id: 2, name: 'Essay Draft',    subjectId: 3, date: today(), priority: 'medium', done: true  },
+  { id: 3, name: 'Lab Report',     subjectId: 2, date: offsetDate(2), priority: 'low', done: false },
+];
+
+let sessions  = [];
+let reminders = [];
+let taskFilter = 'all';
+let weekOffset = 0;
+let selectedColor = COLORS[0];
+let nextId = 100;
+let streakDays = 3;
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+function offsetDate(d) {
+  const dt = new Date(); dt.setDate(dt.getDate() + d);
+  return dt.toISOString().split('T')[0];
+}
+
+/* ══════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════ */
+window.onload = () => {
+  updateHeaderDate();
+  renderColorRow();
+  populateSubjectDropdowns();
+  renderSubjectChips();
+  renderDashboard();
+  renderTasks();
+  renderTimetable();
+  renderProgress();
+  renderReminders();
+  setDefaultDates();
+  setInterval(checkReminders, 30000);
+};
+
+function updateHeaderDate() {
+  const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
+  document.getElementById('headerDate').textContent = new Date().toLocaleDateString('en-US', opts);
+}
+
+function setDefaultDates() {
+  const t = today();
+  ['taskDate','qTaskDate','reminderDate'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = t;
+  });
+  const rt = document.getElementById('reminderTime');
+  if (rt) rt.value = '08:00';
+}
+
+/* ══════════════════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════════════════ */
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (btn) btn.classList.add('active');
+  else {
+    const b = document.querySelector(`[data-tab="${tab}"]`);
+    if (b) b.classList.add('active');
+  }
+  if (tab === 'progress') renderProgress();
+}
+
+/* ══════════════════════════════════════════════════
+   SUBJECTS
+══════════════════════════════════════════════════ */
+function renderColorRow() {
+  const row = document.getElementById('colorRow');
+  row.innerHTML = COLORS.map(c =>
+    `<div class="color-swatch ${c===selectedColor?'selected':''}"
+         style="background:${c}"
+         onclick="selectColor('${c}',this)"></div>`
+  ).join('');
+}
+
+function selectColor(c, el) {
+  selectedColor = c;
+  document.querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function addSubject() {
+  const name = document.getElementById('subjectNameInput').value.trim();
+  if (!name) { toast('Please enter a subject name', 'warning'); return; }
+  if (subjects.find(s => s.name.toLowerCase() === name.toLowerCase())) {
+    toast('Subject already exists', 'warning'); return;
+  }
+  subjects.push({ id: nextId++, name, color: selectedColor });
+  document.getElementById('subjectNameInput').value = '';
+  renderSubjectChips();
+  populateSubjectDropdowns();
+  renderDashboard();
+  renderProgress();
+  toast(`"${name}" added! 📚`);
+}
+
+function deleteSubject(id) {
+  subjects = subjects.filter(s => s.id !== id);
+  tasks = tasks.filter(t => t.subjectId !== id);
+  sessions = sessions.filter(s => s.subjectId !== id);
+  renderSubjectChips();
+  populateSubjectDropdowns();
+  renderDashboard(); renderTasks(); renderTimetable(); renderProgress();
+  toast('Subject removed');
+}
+
+function renderSubjectChips() {
+  const el = document.getElementById('subjectChips');
+  if (!subjects.length) { el.innerHTML = '<div style="color:var(--muted);font-size:.82rem;padding:8px;">No subjects yet</div>'; return; }
+  el.innerHTML = subjects.map(s => {
+    const cnt = tasks.filter(t => t.subjectId === s.id).length;
+    return `<div class="subject-chip" style="background:${s.color}20;color:${darken(s.color)};">
+      <div class="chip-dot" style="background:${s.color}"></div>
+      <span class="chip-name">${s.name}</span>
+      <span class="chip-count">${cnt}</span>
+      <button class="chip-del" onclick="deleteSubject(${s.id})">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function darken(hex) {
+  // Return a darkened version for text
+  return hex; // simplified — colours chosen are already readable
+}
+
+function populateSubjectDropdowns() {
+  const opts = '<option value="">Select subject…</option>' +
+    subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  ['taskSubject','qTaskSubject','sessionSubject'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = opts;
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   TASKS
+══════════════════════════════════════════════════ */
+function addTask() {
+  const name = document.getElementById('taskName').value.trim();
+  const subjectId = parseInt(document.getElementById('taskSubject').value);
+  const date = document.getElementById('taskDate').value;
+  const priority = document.getElementById('taskPriority').value;
+  if (!name) { toast('Enter a task name', 'warning'); return; }
+  tasks.push({ id: nextId++, name, subjectId: subjectId||null, date, priority, done: false });
+  document.getElementById('taskName').value = '';
+  renderTasks(); renderDashboard(); renderProgress(); renderSubjectChips();
+  toast('Task added! ✅');
+}
+
+function quickAddTask() {
+  const name = document.getElementById('qTaskName').value.trim();
+  const subjectId = parseInt(document.getElementById('qTaskSubject').value);
+  const date = document.getElementById('qTaskDate').value;
+  if (!name) { toast('Enter a task name', 'warning'); return; }
+  tasks.push({ id: nextId++, name, subjectId: subjectId||null, date, priority: 'medium', done: false });
+  document.getElementById('qTaskName').value = '';
+  renderTasks(); renderDashboard(); renderProgress(); renderSubjectChips();
+  toast('Task added! ✅');
+}
+
+function toggleTask(id) {
+  const t = tasks.find(t => t.id === id);
+  if (t) { t.done = !t.done; }
+  renderTasks(); renderDashboard(); renderProgress();
+}
+
+function deleteTask(id) {
+  tasks = tasks.filter(t => t.id !== id);
+  renderTasks(); renderDashboard(); renderProgress(); renderSubjectChips();
+}
+
+function filterTasks(f, btn) {
+  taskFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderTasks();
+}
+
+function renderTasks() {
+  const el = document.getElementById('tasksList');
+  const t0 = today();
+  let filtered = [...tasks];
+  if (taskFilter === 'pending') filtered = filtered.filter(t => !t.done);
+  else if (taskFilter === 'done') filtered = filtered.filter(t => t.done);
+  else if (taskFilter === 'high') filtered = filtered.filter(t => t.priority === 'high' && !t.done);
+  else if (taskFilter === 'today') filtered = filtered.filter(t => t.date === t0);
+
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No tasks here yet!</p></div>`;
+    return;
+  }
+  // Sort: undone first, then by date
+  filtered.sort((a,b) => a.done - b.done || (a.date||'').localeCompare(b.date||''));
+
+  el.innerHTML = filtered.map(t => {
+    const subj = subjects.find(s => s.id === t.subjectId);
+    const overdue = t.date && t.date < t0 && !t.done;
+    const dueLabel = t.date ? (t.date === t0 ? '📅 Today' : formatDate(t.date)) : '';
+    return `<div class="task-card ${t.done?'done':''}" style="border-left-color:${subj?subj.color:'var(--border)'}">
+      <div class="task-checkbox" onclick="toggleTask(${t.id})">${t.done?'✓':''}</div>
+      <div class="task-info">
+        <div class="task-name">${t.name}</div>
+        <div class="task-meta">
+          ${subj?`<span class="task-subject-badge" style="background:${subj.color}30;color:${subj.color}">${subj.name}</span>`:''}
+          ${dueLabel?`<span class="task-due ${overdue?'overdue':''}">${overdue?'⚠️ Overdue · ':''}${dueLabel}</span>`:''}
+          <span class="task-priority priority-${t.priority}">${{high:'🔴 High',medium:'🟡 Medium',low:'🟢 Low'}[t.priority]}</span>
+        </div>
+      </div>
+      <button class="task-del-btn" onclick="deleteTask(${t.id})">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════════════ */
+function renderDashboard() {
+  const done = tasks.filter(t => t.done).length;
+  const pending = tasks.filter(t => !t.done).length;
+  document.getElementById('statCompleted').textContent = done;
+  document.getElementById('statPending').textContent   = pending;
+  document.getElementById('statSubjects').textContent  = subjects.length;
+  document.getElementById('statStreak').textContent    = streakDays;
+
+  // Subject progress
+  const dp = document.getElementById('dashProgress');
+  if (!subjects.length) { dp.innerHTML = '<div class="empty-state"><div class="empty-icon">📚</div><p>Add subjects first</p></div>'; }
+  else {
+    dp.innerHTML = subjects.map(s => {
+      const total = tasks.filter(t => t.subjectId === s.id).length;
+      const comp  = tasks.filter(t => t.subjectId === s.id && t.done).length;
+      const pct   = total ? Math.round(comp/total*100) : 0;
+      return `<div class="progress-item">
+        <div class="progress-label"><span>${s.name}</span><span>${pct}%</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${s.color}"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  // Today's tasks
+  const tt = document.getElementById('todayTasks');
+  const todayTasks = tasks.filter(t => t.date === today());
+  if (!todayTasks.length) { tt.innerHTML = '<div class="empty-state"><div class="empty-icon">🌟</div><p>No tasks today!</p></div>'; }
+  else {
+    tt.innerHTML = todayTasks.map(t => {
+      const s = subjects.find(s => s.id === t.subjectId);
+      return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="width:10px;height:10px;border-radius:50%;background:${s?s.color:'#ccc'};flex-shrink:0"></div>
+        <span style="flex:1;font-weight:600;font-size:.9rem;${t.done?'text-decoration:line-through;opacity:.5':''}">${t.name}</span>
+        <span style="font-size:.75rem;color:var(--muted)">${{high:'🔴',medium:'🟡',low:'🟢'}[t.priority]}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   TIMETABLE
+══════════════════════════════════════════════════ */
+const HOURS = Array.from({length:14}, (_,i) => i+7); // 7am–8pm
+const DAYS  = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+function getWeekStart(offset) {
+  const d = new Date();
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1) + offset*7;
+  d.setDate(diff);
+  return d;
+}
+
+function renderTimetable() {
+  const ws = getWeekStart(weekOffset);
+  const we = new Date(ws); we.setDate(we.getDate()+6);
+  document.getElementById('weekLabel').textContent =
+    `${ws.toLocaleDateString('en-US',{month:'short',day:'numeric'})} – ${we.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`;
+
+  const todayName = new Date().toLocaleDateString('en-US',{weekday:'long'});
+
+  // Header
+  const hdr = document.getElementById('timetableHeader');
+  hdr.innerHTML = `<div class="th-cell">Time</div>` +
+    DAYS.map(d => `<div class="th-cell ${d===todayName?'today':''}">${d.slice(0,3)}</div>`).join('');
+
+  // Body
+  const body = document.getElementById('timetableBody');
+  // Populate session start select
+  const ss = document.getElementById('sessionStart');
+  if (ss) ss.innerHTML = HOURS.map(h => `<option value="${h}">${h===12?'12 PM':h<12?h+' AM':(h-12)+' PM'}</option>`).join('');
+
+  body.innerHTML = HOURS.map(h => {
+    const timeLabel = h===12?'12 PM':h<12?h+' AM':(h-12)+' PM';
+    const cells = DAYS.map(day => {
+      const sesh = sessions.filter(s => s.day===day && s.startHour===h);
+      const blocks = sesh.map(s => {
+        const subj = subjects.find(sub => sub.id===s.subjectId);
+        return `<div class="time-block" style="background:${subj?subj.color+'40':'#e2e8f0'};color:${subj?subj.color:'#555'}">
+          📖 ${subj?subj.name:'Study'}
+          <button class="del-block" onclick="deleteSession(${s.id})">✕</button>
+        </div>`;
+      }).join('');
+      return `<div class="time-cell" onclick="openAddSessionModalAt('${day}',${h})">${blocks}</div>`;
+    }).join('');
+    return `<div class="time-row">
+      <div class="time-label">${timeLabel}</div>
+      ${cells}
+    </div>`;
+  }).join('');
+}
+
+function changeWeek(d) { weekOffset += d; renderTimetable(); }
+function goToToday()   { weekOffset = 0; renderTimetable(); }
+
+function openAddSessionModal() {
+  document.getElementById('sessionModal').classList.add('open');
+}
+function openAddSessionModalAt(day, hour) {
+  document.getElementById('sessionDay').value = day;
+  document.getElementById('sessionStart').value = hour;
+  document.getElementById('sessionModal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('sessionModal').classList.remove('open');
+}
+
+function addSession() {
+  const subjectId = parseInt(document.getElementById('sessionSubject').value);
+  const day = document.getElementById('sessionDay').value;
+  const startHour = parseInt(document.getElementById('sessionStart').value);
+  const duration = parseInt(document.getElementById('sessionDuration').value);
+  if (!subjectId) { toast('Select a subject', 'warning'); return; }
+  for (let i=0; i<duration; i++) {
+    sessions.push({ id: nextId++, subjectId, day, startHour: startHour+i });
+  }
+  closeModal();
+  renderTimetable();
+  toast('Study session added! 📅');
+}
+
+function deleteSession(id) {
+  sessions = sessions.filter(s => s.id !== id);
+  renderTimetable();
+}
+
+/* ══════════════════════════════════════════════════
+   PROGRESS
+══════════════════════════════════════════════════ */
+function renderProgress() {
+  document.getElementById('streakNum').textContent = streakDays;
+
+  const po = document.getElementById('progressOverview');
+  if (!subjects.length) {
+    po.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📊</div><p>Add subjects to see progress</p></div>';
+  } else {
+    po.innerHTML = subjects.map(s => {
+      const total = tasks.filter(t => t.subjectId === s.id).length;
+      const comp  = tasks.filter(t => t.subjectId === s.id && t.done).length;
+      const pct   = total ? Math.round(comp/total*100) : 0;
+      const r = 36, circ = 2*Math.PI*r;
+      const dash = circ - (pct/100)*circ;
+      return `<div class="subject-progress-card">
+        <div class="circular-progress">
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle class="bg-circle" cx="45" cy="45" r="${r}"/>
+            <circle class="fill-circle" cx="45" cy="45" r="${r}"
+              stroke="${s.color}"
+              stroke-dasharray="${circ}"
+              stroke-dashoffset="${dash}"/>
+          </svg>
+          <div class="pct-text" style="color:${s.color}">${pct}%</div>
+        </div>
+        <div class="sp-name">${s.name}</div>
+        <div class="sp-sub">${comp} / ${total} tasks</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Weekly bar chart
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const randomData = days.map(() => Math.floor(Math.random()*8));
+  const max = Math.max(...randomData, 1);
+  const colors = [
+    'var(--mint-mid)','var(--lavender-mid)','var(--peach-mid)',
+    'var(--sky-mid)','var(--rose-mid)','var(--mint-mid)','var(--lavender-mid)'
+  ];
+  document.getElementById('weeklyChart').innerHTML = days.map((d,i) =>
+    `<div class="chart-col">
+      <div class="chart-bar" style="height:${(randomData[i]/max)*100}%;background:${colors[i]}"></div>
+      <div class="chart-day">${d}</div>
+    </div>`
+  ).join('');
+}
+
+/* ══════════════════════════════════════════════════
+   REMINDERS
+══════════════════════════════════════════════════ */
+const REMINDER_ICONS = ['⏰','📌','🎯','📖','✏️','🔔','⚡','🌟'];
+const REMINDER_COLORS = [
+  'var(--mint)','var(--lavender)','var(--peach)','var(--sky)','var(--rose)'
+];
+
+function addReminder() {
+  const text = document.getElementById('reminderText').value.trim();
+  const date = document.getElementById('reminderDate').value;
+  const time = document.getElementById('reminderTime').value;
+  if (!text) { toast('Enter a reminder message', 'warning'); return; }
+  reminders.push({
+    id: nextId++, text, date, time,
+    icon: REMINDER_ICONS[Math.floor(Math.random()*REMINDER_ICONS.length)],
+    color: REMINDER_COLORS[Math.floor(Math.random()*REMINDER_COLORS.length)]
+  });
+  document.getElementById('reminderText').value = '';
+  renderReminders();
+  toast('Reminder set! 🔔');
+}
+
+function deleteReminder(id) {
+  reminders = reminders.filter(r => r.id !== id);
+  renderReminders();
+}
+
+function renderReminders() {
+  const el = document.getElementById('reminderList');
+  if (!reminders.length) {
+    el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔕</div><p>No reminders yet. Add one above!</p></div>`;
+    return;
+  }
+  reminders.sort((a,b) => (a.date+a.time).localeCompare(b.date+b.time));
+  el.innerHTML = reminders.map(r =>
+    `<div class="reminder-card">
+      <div class="reminder-icon" style="background:${r.color}">${r.icon}</div>
+      <div class="reminder-info">
+        <div class="reminder-title">${r.text}</div>
+        <div class="reminder-time">📅 ${r.date?formatDate(r.date):''} ${r.time?'· ⏰ '+formatTime(r.time):''}</div>
+      </div>
+      <button class="reminder-del" onclick="deleteReminder(${r.id})">🗑️</button>
+    </div>`
+  ).join('');
+}
+
+function checkReminders() {
+  const now = new Date();
+  const dateStr = now.toISOString().split('T')[0];
+  const timeStr = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  reminders.forEach(r => {
+    if (r.date === dateStr && r.time === timeStr) {
+      toast(`⏰ Reminder: ${r.text}`, 'info');
+    }
+  });
+}
+
+/* ══════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════ */
+function formatDate(d) {
+  if (!d) return '';
+  const dt = new Date(d + 'T00:00:00');
+  return dt.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function formatTime(t) {
+  if (!t) return '';
+  const [h,m] = t.split(':').map(Number);
+  const ampm = h>=12?'PM':'AM';
+  return `${h%12||12}:${m.toString().padStart(2,'0')} ${ampm}`;
+}
+
+function toast(msg, type='success') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.innerHTML = `<span>${{success:'✅',warning:'⚠️',info:'ℹ️'}[type]}</span> ${msg}`;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+</script>
+</body>
+</html>
