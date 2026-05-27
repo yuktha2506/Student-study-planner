@@ -270,6 +270,13 @@
   }
   .card-title span { font-size: 1.3rem; }
 
+  .quick-add-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+
   /* ── PROGRESS BAR ── */
   .progress-item { margin-bottom: 16px; }
   .progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 700; font-size: 0.88rem; }
@@ -712,11 +719,216 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 900px) {
-    .app { grid-template-columns: 1fr; }
-    aside { display: none; }
+    header {
+      padding: 14px 18px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .logo { font-size: 1.35rem; }
+    .tagline { display: none; }
+    .header-right { margin-left: auto; }
+    .date-badge { padding: 7px 12px; font-size: 0.78rem; }
+
+    .app {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    aside {
+      position: sticky;
+      top: 69px;
+      z-index: 80;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 14px;
+      gap: 10px;
+      overflow-x: auto;
+      flex-direction: row;
+      align-items: center;
+      flex-wrap: nowrap;
+    }
+
+    .nav-section-label { display: none; }
+    .nav-btn {
+      width: auto;
+      flex: 0 0 auto;
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+    .nav-btn .nav-icon { width: auto; }
+
+    .subject-chips {
+      flex: 0 0 auto;
+      flex-direction: row;
+      padding: 0;
+      gap: 8px;
+    }
+    .subject-chip {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+    .chip-del,
+    .subject-chip:hover .chip-del {
+      opacity: 1;
+    }
+
+    .add-subject-form {
+      flex: 0 0 260px;
+      padding: 0;
+    }
+
+    main { padding: 22px 18px; }
     .stats-row { grid-template-columns: 1fr 1fr; }
-    .task-add-form { grid-template-columns: 1fr 1fr; }
-    .reminder-form { grid-template-columns: 1fr 1fr; }
+    .three-col,
+    .two-col { grid-template-columns: 1fr; }
+    .task-add-form,
+    .reminder-form,
+    .quick-add-form {
+      grid-template-columns: 1fr 1fr;
+    }
+    .task-add-form .btn-primary,
+    .reminder-form .btn-primary,
+    .quick-add-form .btn-primary {
+      width: 100%;
+    }
+    .progress-overview { grid-template-columns: 1fr 1fr; }
+    .timetable-grid {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .timetable-header,
+    .time-row {
+      min-width: 760px;
+    }
+    .modal {
+      width: min(380px, calc(100vw - 32px));
+      padding: 24px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    :root { --radius: 14px; }
+
+    header { padding: 12px 14px; }
+    .logo { font-size: 1.2rem; }
+    .logo-icon { font-size: 1.45rem; }
+    .date-badge { display: none; }
+    .notification-btn {
+      width: 38px;
+      height: 38px;
+    }
+
+    aside {
+      top: 63px;
+      padding: 10px 12px;
+    }
+
+    main { padding: 18px 14px 28px; }
+    .section-title {
+      font-size: 1.25rem;
+      margin-bottom: 16px;
+    }
+    .card,
+    .task-add-form,
+    .reminder-form,
+    .subject-progress-card,
+    .weekly-chart {
+      padding: 16px;
+    }
+
+    .stats-row,
+    .task-add-form,
+    .reminder-form,
+    .quick-add-form,
+    .progress-overview {
+      grid-template-columns: 1fr;
+    }
+
+    .stat-card {
+      padding: 16px;
+      min-height: 112px;
+    }
+    .stat-value { font-size: 1.75rem; }
+
+    .filter-bar {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+    .filter-chip {
+      flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .task-card,
+    .reminder-card {
+      align-items: flex-start;
+      padding: 14px;
+      gap: 12px;
+    }
+    .task-info,
+    .reminder-info {
+      min-width: 0;
+    }
+    .task-name,
+    .reminder-title {
+      overflow-wrap: anywhere;
+    }
+    .task-del-btn,
+    .reminder-del {
+      opacity: 1;
+      flex-shrink: 0;
+    }
+
+    .timetable-controls {
+      align-items: stretch;
+    }
+    .week-nav {
+      width: 100%;
+      justify-content: space-between;
+    }
+    .week-label {
+      min-width: 0;
+      flex: 1;
+    }
+    .timetable-controls .btn-secondary,
+    .timetable-controls .btn-primary {
+      flex: 1 1 140px;
+    }
+
+    .streak-card {
+      align-items: flex-start;
+      padding: 18px;
+    }
+    .streak-number { font-size: 2.8rem; }
+    .chart-bars { gap: 8px; }
+
+    .modal-overlay {
+      align-items: flex-end;
+      padding: 12px;
+    }
+    .modal {
+      width: 100%;
+      max-height: calc(100vh - 24px);
+      overflow-y: auto;
+      border-radius: 18px;
+      padding: 20px;
+    }
+    .modal-actions {
+      flex-direction: column-reverse;
+    }
+
+    #toast-container {
+      top: auto;
+      right: 12px;
+      bottom: 12px;
+      left: 12px;
+    }
+    .toast {
+      min-width: 0;
+      width: 100%;
+    }
   }
 
   /* ── EMPTY STATE ── */
